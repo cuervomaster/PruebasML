@@ -20,5 +20,21 @@ model = linear_model.LinearRegression().fit(x,y)
 
 print("ŷ =" + str(model.intercept_[0]) + " + " + str(model.coef_.T[0][0]) + " x₁")
 
+y_pred = model.predict(x)
+print(mean_absolute_error(y, y_pred))
+
+mae = mean_absolute_error(y, y_pred)
+
+plt.scatter(x, y, color='black')
+plt.plot(x, y_pred, color='blue', linewidth=3)
+plt.plot(x, y_pred + mae, color='lightgray')
+plt.plot(x, y_pred - mae, color='lightgray')
+#plt.show()
+
+corr, pval = pearsonr(x[:,0], y[:,0])
+print(corr)
+print(pval < 0.05)
+
+
 
 
