@@ -7,7 +7,7 @@ from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 num_records = 200
-
+#123
 url = \
 'http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_Dinov_020108_HeightsWeights'
 page = requests.get(url)
