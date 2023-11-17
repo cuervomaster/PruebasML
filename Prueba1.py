@@ -29,11 +29,11 @@ plt.scatter(x, y, color='black')
 plt.plot(x, y_pred, color='blue', linewidth=3)
 plt.plot(x, y_pred + mae, color='lightgray')
 plt.plot(x, y_pred - mae, color='lightgray')
-#plt.show()
+plt.show()
 
-corr, pval = pearsonr(x[:,0], y[:,0])
-print(corr)
-print(pval < 0.05)
+# corr, pval = pearsonr(x[:,0], y[:,0])
+# print(corr)
+# print(pval < 0.05)
 
 
 
