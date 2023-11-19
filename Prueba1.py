@@ -7,7 +7,7 @@ from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 num_records = 200
-
+#123
 url = \
 'http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_Dinov_020108_HeightsWeights'
 page = requests.get(url)
@@ -29,11 +29,11 @@ plt.scatter(x, y, color='black')
 plt.plot(x, y_pred, color='blue', linewidth=3)
 plt.plot(x, y_pred + mae, color='lightgray')
 plt.plot(x, y_pred - mae, color='lightgray')
-#plt.show()
+plt.show()
 
-corr, pval = pearsonr(x[:,0], y[:,0])
-print(corr)
-print(pval < 0.05)
+# corr, pval = pearsonr(x[:,0], y[:,0])
+# print(corr)
+# print(pval < 0.05)
 
 
 
