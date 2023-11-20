@@ -60,27 +60,37 @@ train_set, test_set = shuffle_and_split_data(housing, 0.2)
 from zlib import crc32
 
 def is_id_in_test_set(identifier, test_ratio):
+    # crc32 e una función que cuando se le pasa el número como bytes lo convierte pseudo aleatoriamente
+    # en un número de 0 a 2^32, con una distribución más o menos distribuida para un rango de números
+    # por lo tanto cuando se multiplica test_ratio * 2^32 se toma una proporción definida del rango de números
+    # pero seleccionados pseudo aleatoriamente
     return crc32(np.int64(identifier)) < test_ratio * 2**32
 
 def split_data_with_id_hash(data, test_ratio, id_column):
     ids = data[id_column]
+    #genera un dataframe donde reemplaza cada elemento de data[id_column] por True o False, según el resultado de aplicar
+    # la función is_id_in_test_set
     in_test_set = ids.apply(lambda id_: is_id_in_test_set(id_, test_ratio))
     #print(in_test_set)
+    # retorna dos dataframe, uno con los registros para el training y otro para el testing
     return data.loc[~in_test_set], data.loc[in_test_set]
 
+# genera la columna index donde se coloca los índices de cada fila
 housing_with_id = housing.reset_index()  # adds an `index` column
 # print(housing_with_id.head())
+#genera los dos conjuntos de datos train y test con un porcentaje de 20% y la columna index
 train_set, test_set = split_data_with_id_hash(housing_with_id, 0.2, "index")
 
+#crea una columna id en el df housing_with_id a partir de un cálculo con las columnas longitude y latitude
+# del df housing, se toman los valores entre filas correspondientes
 housing_with_id["id"] = housing["longitude"] * 1000 + housing["latitude"]
 #print(housing_with_id.head())
 
 train_set, test_set = split_data_with_id_hash(housing_with_id, 0.2, "id")
 
+
 from sklearn.model_selection import train_test_split
-
 train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
-
 
 # print(len(train_set))
 # print(len(test_set))
@@ -88,6 +98,8 @@ train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 # print(train_set.head())
 # print(test_set['total_bedrooms'].isnull().sum())
 print(housing.head())
+
+#Crea una nueva columna que categoriza la columna median_income segun 5 rangos, np.inf representa un número muy grande
 housing["income_cat"] = pd.cut(housing["median_income"],
                                bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
                                labels=[1, 2, 3, 4, 5])
