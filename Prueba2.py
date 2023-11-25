@@ -97,17 +97,32 @@ train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 # print(test_set.head())
 # print(train_set.head())
 # print(test_set['total_bedrooms'].isnull().sum())
-print(housing.head())
+# print(housing.head())
 
 #Crea una nueva columna que categoriza la columna median_income segun 5 rangos, np.inf representa un número muy grande
 housing["income_cat"] = pd.cut(housing["median_income"],
                                bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
                                labels=[1, 2, 3, 4, 5])
 
-print(housing.head())
+# print(housing.head())
 housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
-print(housing.head())
+# print(housing.head())
 plt.xlabel("Income category")
 plt.ylabel("Number of districts")
-save_fig("housing_income_cat_bar_plot")  # extra code
-plt.show()
+# save_fig("housing_income_cat_bar_plot")  # extra code
+# plt.show()
+
+from sklearn.model_selection import StratifiedShuffleSplit
+
+splitter = StratifiedShuffleSplit(n_splits=10, test_size=0.2, random_state=42)
+strat_splits = []
+for train_index, test_index in splitter.split(housing, housing["income_cat"]):
+    strat_train_set_n = housing.iloc[train_index]
+    strat_test_set_n = housing.iloc[test_index]
+    strat_splits.append([strat_train_set_n, strat_test_set_n])
+
+strat_train_set, strat_test_set = strat_splits[0]
+
+print(strat_train_set.head())
+print()
+print(strat_test_set.head())
