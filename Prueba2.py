@@ -90,6 +90,7 @@ train_set, test_set = split_data_with_id_hash(housing_with_id, 0.2, "id")
 
 
 from sklearn.model_selection import train_test_split
+#************************************************************************
 train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 
 # print(len(train_set))
@@ -113,6 +114,7 @@ plt.ylabel("Number of districts")
 # plt.show()
 
 from sklearn.model_selection import StratifiedShuffleSplit
+#**********************************************************
 
 splitter = StratifiedShuffleSplit(n_splits=10, test_size=0.2, random_state=42)
 strat_splits = []
@@ -123,6 +125,42 @@ for train_index, test_index in splitter.split(housing, housing["income_cat"]):
 
 strat_train_set, strat_test_set = strat_splits[0]
 
-print(strat_train_set.head())
-print()
-print(strat_test_set.head())
+# print(strat_train_set.info())
+# print()
+# print(strat_test_set.info())
+
+# # Cuenta la frecuencia de cada categoría en la columna 'income_cat'
+# category_counts = strat_test_set['income_cat'].value_counts()
+
+# # Ordena las categorías si es necesario
+# category_counts.sort_index(inplace=True)
+
+# # Imprime los resultados
+# print(category_counts)
+
+# category_counts = strat_train_set['income_cat'].value_counts()
+
+# # Ordena las categorías si es necesario
+# category_counts.sort_index(inplace=True)
+
+# # Imprime los resultados
+# print(category_counts)
+
+# # primer_registro_longitude = strat_train_set['longitude'].iloc[0]
+# # primer_registro_latitude = strat_train_set['latitude'].iloc[0]
+
+# # Imprime los valores
+# # print("Longitude:", primer_registro_longitude)
+# # print("Latitude:", primer_registro_latitude)
+
+#otra forma de hacer la divisió para el train y el test, una sola opción de división
+#***********************************************************************************
+
+strat_train_set, strat_test_set = train_test_split(
+    housing, test_size=0.2, stratify=housing["income_cat"], random_state=42)
+
+#Como más adelante ya no se va a utilizar la columna ´income_cat´ se borra
+
+for set_ in (strat_train_set, strat_test_set):
+    set_.drop("income_cat", axis=1, inplace=True)
+
