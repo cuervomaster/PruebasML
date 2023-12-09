@@ -105,13 +105,13 @@ housing["income_cat"] = pd.cut(housing["median_income"],
                                bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
                                labels=[1, 2, 3, 4, 5])
 
-# print(housing.head())
-housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
-# print(housing.head())
-plt.xlabel("Income category")
-plt.ylabel("Number of districts")
-# save_fig("housing_income_cat_bar_plot")  # extra code
-# plt.show()
+# # print(housing.head())
+# housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
+# # print(housing.head())
+# plt.xlabel("Income category")
+# plt.ylabel("Number of districts")
+# # save_fig("housing_income_cat_bar_plot")  # extra code
+# # plt.show()
 
 from sklearn.model_selection import StratifiedShuffleSplit
 #**********************************************************
@@ -164,3 +164,9 @@ strat_train_set, strat_test_set = train_test_split(
 for set_ in (strat_train_set, strat_test_set):
     set_.drop("income_cat", axis=1, inplace=True)
 
+#por si acaso para guardar el set de entrenamiento original, creamos una copia para trabajar
+housing = strat_train_set.copy()
+
+housing.plot(kind="scatter", x="longitude", y="latitude", grid=True, alpha=0.2)
+save_fig("bad_visualization_plot")  # extra code
+plt.show()
