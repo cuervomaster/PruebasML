@@ -167,6 +167,36 @@ for set_ in (strat_train_set, strat_test_set):
 #por si acaso para guardar el set de entrenamiento original, creamos una copia para trabajar
 housing = strat_train_set.copy()
 
-housing.plot(kind="scatter", x="longitude", y="latitude", grid=True, alpha=0.2)
-save_fig("bad_visualization_plot")  # extra code
+# housing.plot(kind="scatter", x="longitude", y="latitude", grid=True,
+# s=housing["population"] / 100, label="population",
+# c="median_house_value", cmap="jet", colorbar=True,
+# legend=True, sharex=False, figsize=(10, 7))
+#save_fig("bad_visualization_plot")  # extra code
+#plt.show()
+
+corr_matrix = housing.corr(numeric_only=True)
+#print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+# Utilizando una libreria de pandas podemos hacer directamente las correlaciones cruzadas entre los campos numéricos
+# Es posible especificar los campos que nos interesa correlacionar para no generar más gráficos de los necesarios
+from pandas.plotting import scatter_matrix
+attributes = ["median_house_value", "median_income", "total_rooms",
+"housing_median_age"]
+scatter_matrix(housing[attributes], figsize=(12, 8))
 plt.show()
+
+# #Teniendo una percepción más precisa de las posibles correlaciones y dependencias, se puede hacer el ploteo
+# # de aquellas parejas que tienen una mayor correlación
+# housing.plot(kind="scatter", x="median_income", y="median_house_value",
+# alpha=0.1, grid=True)
+# plt.show()
+
+#Se generan columnas o campos combinados a partir de otros campos, para tener información más pertinente para el análisis
+# por ejemplo el número total de habitaciones en todo el distrito no es útil, pero si el número de habitaciones por hogar
+housing["rooms_per_house"] = housing["total_rooms"] / housing["households"]
+housing["bedrooms_ratio"] = housing["total_bedrooms"] / housing["total_rooms"]
+housing["people_per_house"] = housing["population"] / housing["households"]
+
+#Ahora volvemos a hacer el análisis de correlación con los campos combinados
+corr_matrix = housing.corr(numeric_only=True)
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
