@@ -208,5 +208,30 @@ housing = strat_train_set.drop("median_house_value", axis=1)
 # separamos la columna objetivo para luego evaluar el nivel de precisión del modelo
 housing_labels = strat_train_set["median_house_value"].copy()
 
-print(housing.info())
+# #Otro punto a solucionar es verificar si hay valores ausentes, por ejemplo en la columna total_bedrooms
+# # para eso hay tres opciones: 1 quitar esos distritos, 2 eliminar la columna y 3 hacer una imputación, es decir, reemplazar
+# # los valores ausentes con la media, mediaan, etc.
+
+# housing.dropna(subset=["total_bedrooms"], inplace=True) # option 1
+# housing.drop("total_bedrooms", axis=1) # option 2
+# median = housing["total_bedrooms"].median() # option 3
+# housing["total_bedrooms"].fillna(median, inplace=True)
+
+# En este caso vamos a hacer la opción 3 pero usando una librería sklearn.impute import SimpleImputer
+from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(strategy="median")
+
+# antes debemos preparar el dataset solo con las columnas que tienen valores numéricos
+housing_num = housing.select_dtypes(include=[np.number])
+
+# Ahora sí podemos aplicar el imputador
+imputer.fit(housing_num)
+# print(imputer.statistics_)
+# print(housing_num.median().values)
+
+# Generar el dataset final de entrenamiento
+X = imputer.transform(housing_num)
+
+
+
 
