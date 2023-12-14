@@ -155,16 +155,79 @@ strat_train_set, strat_test_set = strat_splits[0]
 
 #otra forma de hacer la divisió para el train y el test, una sola opción de división
 #***********************************************************************************
+
 strat_train_set, strat_test_set = train_test_split(
     housing, test_size=0.2, stratify=housing["income_cat"], random_state=42)
 
 #Como más adelante ya no se va a utilizar la columna ´income_cat´ se borra
+
 for set_ in (strat_train_set, strat_test_set):
     set_.drop("income_cat", axis=1, inplace=True)
 
 #por si acaso para guardar el set de entrenamiento original, creamos una copia para trabajar
 housing = strat_train_set.copy()
 
-housing.plot(kind="scatter", x="longitude", y="latitude", grid=True, alpha=0.2)
-save_fig("bad_visualization_plot")  # extra code
-plt.show()
+# housing.plot(kind="scatter", x="longitude", y="latitude", grid=True,
+# s=housing["population"] / 100, label="population",
+# c="median_house_value", cmap="jet", colorbar=True,
+# legend=True, sharex=False, figsize=(10, 7))
+#save_fig("bad_visualization_plot")  # extra code
+#plt.show()
+
+corr_matrix = housing.corr(numeric_only=True)
+#print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+# # Utilizando una libreria de pandas podemos hacer directamente las correlaciones cruzadas entre los campos numéricos
+# # Es posible especificar los campos que nos interesa correlacionar para no generar más gráficos de los necesarios
+# from pandas.plotting import scatter_matrix
+# attributes = ["median_house_value", "median_income", "total_rooms",
+# "housing_median_age"]
+# scatter_matrix(housing[attributes], figsize=(12, 8))
+# plt.show()
+
+# #Teniendo una percepción más precisa de las posibles correlaciones y dependencias, se puede hacer el ploteo
+# # de aquellas parejas que tienen una mayor correlación
+# housing.plot(kind="scatter", x="median_income", y="median_house_value",
+# alpha=0.1, grid=True)
+# plt.show()
+
+#Se generan columnas o campos combinados a partir de otros campos, para tener información más pertinente para el análisis
+# por ejemplo el número total de habitaciones en todo el distrito no es útil, pero si el número de habitaciones por hogar
+housing["rooms_per_house"] = housing["total_rooms"] / housing["households"]
+housing["bedrooms_ratio"] = housing["total_bedrooms"] / housing["total_rooms"]
+housing["people_per_house"] = housing["population"] / housing["households"]
+
+# #Ahora volvemos a hacer el análisis de correlación con los campos combinados
+# corr_matrix = housing.corr(numeric_only=True)
+# print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+# Preparando la data para el training, el dataset de entrenamiento
+# quitamos la columna objetivo del dataset de entrenamiento
+housing = strat_train_set.drop("median_house_value", axis=1)
+
+# separamos la columna objetivo para luego evaluar el nivel de precisión del modelo
+housing_labels = strat_train_set["median_house_value"].copy()
+
+# #Otro punto a solucionar es verificar si hay valores ausentes, por ejemplo en la columna total_bedrooms
+# # para eso hay tres opciones: 1 quitar esos distritos, 2 eliminar la columna y 3 hacer una imputación, es decir, reemplazar
+# # los valores ausentes con la media, mediaan, etc.
+
+# housing.dropna(subset=["total_bedrooms"], inplace=True) # option 1
+# housing.drop("total_bedrooms", axis=1) # option 2
+# median = housing["total_bedrooms"].median() # option 3
+# housing["total_bedrooms"].fillna(median, inplace=True)
+
+# En este caso vamos a hacer la opción 3 pero usando una librería sklearn.impute import SimpleImputer
+from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(strategy="median")
+
+# antes debemos preparar el dataset solo con las columnas que tienen valores numéricos
+housing_num = housing.select_dtypes(include=[np.number])
+
+# Ahora sí podemos aplicar el imputador
+imputer.fit(housing_num)
+# print(imputer.statistics_)
+# print(housing_num.median().values)
+
+# Generar el dataset final de entrenamiento
+X = imputer.transform(housing_num)
