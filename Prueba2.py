@@ -165,19 +165,6 @@ for set_ in (strat_train_set, strat_test_set):
 #por si acaso para guardar el set de entrenamiento original, creamos una copia para trabajar
 housing = strat_train_set.copy()
 
-#Se hace un ploteo de cada distrito según sus coordenadas, el tamaño de cada punto en funcion a la densidad de población
-#y el color según el precio promedio de las casas, esto permite identificar si hay alguna relación entre la ubicación
-#la densidad de la población
-housing.plot(kind="scatter", x="longitude", y="latitude", grid=True,
-s=housing["population"] / 100, label="population",
-c="median_house_value", cmap="jet", colorbar=True,
-legend=True, sharex=False, figsize=(10, 7))
-#save_fig("bad_visualization_plot")  # extra code
-#plt.show()
-
-#CORRELACIONAR LA DATA
-#**********************
-#esta línea es necesaria para que solo se correlacione con los campos numéricos
-corr_matrix = housing.corr(numeric_only=True)
-#aquí se hace la correlación
-print(corr_matrix["median_house_value"].sort_values(ascending=False))
+housing.plot(kind="scatter", x="longitude", y="latitude", grid=True, alpha=0.2)
+save_fig("bad_visualization_plot")  # extra code
+plt.show()
