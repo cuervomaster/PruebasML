@@ -177,13 +177,13 @@ housing = strat_train_set.copy()
 corr_matrix = housing.corr(numeric_only=True)
 #print(corr_matrix["median_house_value"].sort_values(ascending=False))
 
-# Utilizando una libreria de pandas podemos hacer directamente las correlaciones cruzadas entre los campos numéricos
-# Es posible especificar los campos que nos interesa correlacionar para no generar más gráficos de los necesarios
-from pandas.plotting import scatter_matrix
-attributes = ["median_house_value", "median_income", "total_rooms",
-"housing_median_age"]
-scatter_matrix(housing[attributes], figsize=(12, 8))
-plt.show()
+# # Utilizando una libreria de pandas podemos hacer directamente las correlaciones cruzadas entre los campos numéricos
+# # Es posible especificar los campos que nos interesa correlacionar para no generar más gráficos de los necesarios
+# from pandas.plotting import scatter_matrix
+# attributes = ["median_house_value", "median_income", "total_rooms",
+# "housing_median_age"]
+# scatter_matrix(housing[attributes], figsize=(12, 8))
+# plt.show()
 
 # #Teniendo una percepción más precisa de las posibles correlaciones y dependencias, se puede hacer el ploteo
 # # de aquellas parejas que tienen una mayor correlación
@@ -197,6 +197,16 @@ housing["rooms_per_house"] = housing["total_rooms"] / housing["households"]
 housing["bedrooms_ratio"] = housing["total_bedrooms"] / housing["total_rooms"]
 housing["people_per_house"] = housing["population"] / housing["households"]
 
-#Ahora volvemos a hacer el análisis de correlación con los campos combinados
-corr_matrix = housing.corr(numeric_only=True)
-print(corr_matrix["median_house_value"].sort_values(ascending=False))
+# #Ahora volvemos a hacer el análisis de correlación con los campos combinados
+# corr_matrix = housing.corr(numeric_only=True)
+# print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+# Preparando la data para el training, el dataset de entrenamiento
+# quitamos la columna objetivo del dataset de entrenamiento
+housing = strat_train_set.drop("median_house_value", axis=1)
+
+# separamos la columna objetivo para luego evaluar el nivel de precisión del modelo
+housing_labels = strat_train_set["median_house_value"].copy()
+
+print(housing.info())
+
