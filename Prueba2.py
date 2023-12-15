@@ -258,9 +258,3 @@ housing_cat = housing[["ocean_proximity"]] #tomamos la columna con los valores c
 #Otra forma de codificar usando pandas con get_dummies()
 df_test = pd.DataFrame({"ocean_proximity": ["INLAND", "NEAR BAY"]})
 print(pd.get_dummies(df_test).astype(int)) # genera la matriz con las dos categorias identificada, astype para que lo llene con 0 1 y no True False
-
-
-
-
-
-
