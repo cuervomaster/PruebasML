@@ -254,5 +254,11 @@ from sklearn.preprocessing import OneHotEncoder
 
 cat_encoder = OneHotEncoder()
 housing_cat_1hot = cat_encoder.fit_transform(housing_cat)
-print(housing_cat_1hot.toarray())
-print(cat_encoder.categories_)
+# print(housing_cat_1hot.toarray())
+# print(cat_encoder.categories_)
+
+df_test = pd.DataFrame({"ocean_proximity": ["INLAND", "NEAR BAY"]})
+print(pd.get_dummies(df_test))
+
+
+print(cat_encoder.transform(df_test))
