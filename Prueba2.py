@@ -231,3 +231,28 @@ imputer.fit(housing_num)
 
 # Generar el dataset final de entrenamiento
 X = imputer.transform(housing_num)
+
+# X, que almacena el resultado de esta transformación, 
+# es un arreglo de NumPy que carece de nombres de columnas y de índices.
+# Para devolerle los nombres a las columnas y los índices
+housing_tr = pd.DataFrame(X, columns=housing_num.columns, index=housing_num.index)
+
+#Trabajo con el campo que es ordinal
+housing_cat = housing[["ocean_proximity"]]
+#print(housing_cat.head(8))
+
+#Se va  hacer la conversión de esta columna en un campo ORDINAL
+# para pasar de texto a valores numéricos y facilitar el proceso de ML
+from sklearn.preprocessing import OrdinalEncoder
+ordinal_encoder = OrdinalEncoder()
+housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat)
+
+# print(housing_cat_encoded[:8])
+# print(ordinal_encoder.categories_)
+
+from sklearn.preprocessing import OneHotEncoder
+
+cat_encoder = OneHotEncoder()
+housing_cat_1hot = cat_encoder.fit_transform(housing_cat)
+print(housing_cat_1hot.toarray())
+print(cat_encoder.categories_)
