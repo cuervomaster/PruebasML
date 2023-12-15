@@ -230,7 +230,36 @@ imputer.fit(housing_num)
 # print(housing_num.median().values)
 
 # Generar el dataset final de entrenamiento
+# Ojo que la salida de imputer.transform(housing_num) es un arreglo de NumPy: X no tiene ni nombres de columnas ni índice
 X = imputer.transform(housing_num)
+
+# #Para darle nuevamente las propiedades de un Dataframe
+# housing_tr = pd.DataFrame(X, columns=housing_num.columns, index=housing_num.index)
+# print(housing_tr.info()) # para ver que ahora todos sus campos tienen sus valores completos
+
+# MANEJO DE LOS CAMPOS CATEGÓRICOS
+#********************************
+
+housing_cat = housing[["ocean_proximity"]] #tomamos la columna con los valores categóricos
+
+# from sklearn.preprocessing import OrdinalEncoder # importamos la función
+# ordinal_encoder = OrdinalEncoder()
+# housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat) #Obtenemos el dataframe transformado donde cada valor textual es número
+# print(housing_cat_encoded[:8]) # para ver el resultado
+# print(ordinal_encoder.categories_) # para ver el orden en que ha identificado las categorías
+
+# #Otra forma o alternativa para codificar la variable categórica con ceros y unos
+# from sklearn.preprocessing import OneHotEncoder # importamos la función
+# cat_encoder = OneHotEncoder()
+# housing_cat_1hot = cat_encoder.fit_transform(housing_cat) # identificará cada categoría y le asignará un "bit" dentro una trama
+# print(housing_cat_1hot.toarray()) # para ver los unos y ceros en cada trama, como foquitos, representando cada categoría
+# print(cat_encoder.categories_) # para ver el orden en que ha identificado las categorías
+
+#Otra forma de codificar usando pandas con get_dummies()
+df_test = pd.DataFrame({"ocean_proximity": ["INLAND", "NEAR BAY"]})
+print(pd.get_dummies(df_test).astype(int)) # genera la matriz con las dos categorias identificada, astype para que lo llene con 0 1 y no True False
+
+
 
 
 
