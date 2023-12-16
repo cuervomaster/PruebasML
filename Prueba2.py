@@ -248,13 +248,46 @@ housing_cat = housing[["ocean_proximity"]] #tomamos la columna con los valores c
 # print(housing_cat_encoded[:8]) # para ver el resultado
 # print(ordinal_encoder.categories_) # para ver el orden en que ha identificado las categorías
 
-# #Otra forma o alternativa para codificar la variable categórica con ceros y unos
-# from sklearn.preprocessing import OneHotEncoder # importamos la función
-# cat_encoder = OneHotEncoder()
-# housing_cat_1hot = cat_encoder.fit_transform(housing_cat) # identificará cada categoría y le asignará un "bit" dentro una trama
+#Otra forma o alternativa para codificar la variable categórica con ceros y unos
+from sklearn.preprocessing import OneHotEncoder # importamos la función
+cat_encoder = OneHotEncoder()
+housing_cat_1hot = cat_encoder.fit_transform(housing_cat) # identificará cada categoría y le asignará un "bit" dentro una trama
 # print(housing_cat_1hot.toarray()) # para ver los unos y ceros en cada trama, como foquitos, representando cada categoría
 # print(cat_encoder.categories_) # para ver el orden en que ha identificado las categorías
 
 #Otra forma de codificar usando pandas con get_dummies()
 df_test = pd.DataFrame({"ocean_proximity": ["INLAND", "NEAR BAY"]})
-print(pd.get_dummies(df_test).astype(int)) # genera la matriz con las dos categorias identificada, astype para que lo llene con 0 1 y no True False
+#print(pd.get_dummies(df_test).astype(int)) # genera la matriz con las dos categorias identificada, astype para que lo llene con 0 1 y no True False
+
+# OneHotEncoder si es capaz de manejar un valor que no aplica a ninguna categoría de las aprendidas, asociando puros ceros
+# En cambio get_dummies va a generar una nueva columna para esa categoría
+df_test_unknown = pd.DataFrame({"ocean_proximity": ["<2H OCEAN","ISLAND"]})
+cat_encoder.handle_unknown = "ignore"
+print(cat_encoder.transform(df_test_unknown).toarray())
+
+#conocer los nombres de la columnas o características que ha aprendido el encoder
+print(cat_encoder.feature_names_in_)
+
+#conocer los nombres de la columnas o características que generará al aplicar la trasnformación
+print(list(cat_encoder.get_feature_names_out()))
+
+# #Las escalas de los atributos no son similares, 
+# # por ejemplo en un caso va de 2 a 39 320
+# # y en otro caso va de 0.5 a 15
+# print(housing_num['total_rooms'].min())
+# print(housing_num['total_rooms'].max())
+# print(housing_num['median_income'].min())
+# print(housing_num['median_income'].max())
+
+# Es una buena práctica la normalización/estandarización de la escala para poder procesar mejor
+from sklearn.preprocessing import MinMaxScaler
+min_max_scaler = MinMaxScaler(feature_range=(-1, 1))
+housing_num_min_max_scaled = min_max_scaler.fit_transform(housing_num)
+print(housing_num_min_max_scaled[:8])
+print()
+
+# Utilizando el transformador StandardScaler de sklearn
+from sklearn.preprocessing import StandardScaler
+std_scaler = StandardScaler()
+housing_num_std_scaled = std_scaler.fit_transform(housing_num)
+print(housing_num_std_scaled[:8])
