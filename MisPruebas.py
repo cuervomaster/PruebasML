@@ -1,16 +1,5 @@
-import pandas as pd
+import numpy as np
 
-# Crear un DataFrame de ejemplo
-df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]}, index=['x', 'y', 'z'])
+valores = np.linspace(0,100,21).reshape(-1,1)
+print(valores)
 
-# Utilizando loc
-subset_loc = df.loc['x':'y']
-
-# Utilizando iloc
-subset_iloc = df.iloc[0:2]
-
-print("Subset usando loc:")
-print(subset_loc)
-
-print("\nSubset usando iloc:")
-print(subset_iloc)

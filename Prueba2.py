@@ -237,39 +237,39 @@ X = imputer.transform(housing_num)
 # housing_tr = pd.DataFrame(X, columns=housing_num.columns, index=housing_num.index)
 # print(housing_tr.info()) # para ver que ahora todos sus campos tienen sus valores completos
 
-# MANEJO DE LOS CAMPOS CATEGÓRICOS
-#********************************
+# # MANEJO DE LOS CAMPOS CATEGÓRICOS
+# #********************************
 
-housing_cat = housing[["ocean_proximity"]] #tomamos la columna con los valores categóricos
+# housing_cat = housing[["ocean_proximity"]] #tomamos la columna con los valores categóricos
 
-# from sklearn.preprocessing import OrdinalEncoder # importamos la función
-# ordinal_encoder = OrdinalEncoder()
-# housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat) #Obtenemos el dataframe transformado donde cada valor textual es número
-# print(housing_cat_encoded[:8]) # para ver el resultado
-# print(ordinal_encoder.categories_) # para ver el orden en que ha identificado las categorías
+# # from sklearn.preprocessing import OrdinalEncoder # importamos la función
+# # ordinal_encoder = OrdinalEncoder()
+# # housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat) #Obtenemos el dataframe transformado donde cada valor textual es número
+# # print(housing_cat_encoded[:8]) # para ver el resultado
+# # print(ordinal_encoder.categories_) # para ver el orden en que ha identificado las categorías
 
-#Otra forma o alternativa para codificar la variable categórica con ceros y unos
-from sklearn.preprocessing import OneHotEncoder # importamos la función
-cat_encoder = OneHotEncoder()
-housing_cat_1hot = cat_encoder.fit_transform(housing_cat) # identificará cada categoría y le asignará un "bit" dentro una trama
-# print(housing_cat_1hot.toarray()) # para ver los unos y ceros en cada trama, como foquitos, representando cada categoría
-# print(cat_encoder.categories_) # para ver el orden en que ha identificado las categorías
+# #Otra forma o alternativa para codificar la variable categórica con ceros y unos
+# from sklearn.preprocessing import OneHotEncoder # importamos la función
+# cat_encoder = OneHotEncoder()
+# housing_cat_1hot = cat_encoder.fit_transform(housing_cat) # identificará cada categoría y le asignará un "bit" dentro una trama
+# # print(housing_cat_1hot.toarray()) # para ver los unos y ceros en cada trama, como foquitos, representando cada categoría
+# # print(cat_encoder.categories_) # para ver el orden en que ha identificado las categorías
 
-#Otra forma de codificar usando pandas con get_dummies()
-df_test = pd.DataFrame({"ocean_proximity": ["INLAND", "NEAR BAY"]})
-#print(pd.get_dummies(df_test).astype(int)) # genera la matriz con las dos categorias identificada, astype para que lo llene con 0 1 y no True False
+# #Otra forma de codificar usando pandas con get_dummies()
+# df_test = pd.DataFrame({"ocean_proximity": ["INLAND", "NEAR BAY"]})
+# #print(pd.get_dummies(df_test).astype(int)) # genera la matriz con las dos categorias identificada, astype para que lo llene con 0 1 y no True False
 
-# OneHotEncoder si es capaz de manejar un valor que no aplica a ninguna categoría de las aprendidas, asociando puros ceros
-# En cambio get_dummies va a generar una nueva columna para esa categoría
-df_test_unknown = pd.DataFrame({"ocean_proximity": ["<2H OCEAN","ISLAND"]})
-cat_encoder.handle_unknown = "ignore"
-print(cat_encoder.transform(df_test_unknown).toarray())
+# # OneHotEncoder si es capaz de manejar un valor que no aplica a ninguna categoría de las aprendidas, asociando puros ceros
+# # En cambio get_dummies va a generar una nueva columna para esa categoría
+# df_test_unknown = pd.DataFrame({"ocean_proximity": ["<2H OCEAN","ISLAND"]})
+# cat_encoder.handle_unknown = "ignore"
+# print(cat_encoder.transform(df_test_unknown).toarray())
 
-#conocer los nombres de la columnas o características que ha aprendido el encoder
-print(cat_encoder.feature_names_in_)
+# #conocer los nombres de la columnas o características que ha aprendido el encoder
+# print(cat_encoder.feature_names_in_)
 
-#conocer los nombres de la columnas o características que generará al aplicar la trasnformación
-print(list(cat_encoder.get_feature_names_out()))
+# #conocer los nombres de la columnas o características que generará al aplicar la trasnformación
+# print(list(cat_encoder.get_feature_names_out()))
 
 # #Las escalas de los atributos no son similares, 
 # # por ejemplo en un caso va de 2 a 39 320
@@ -279,15 +279,70 @@ print(list(cat_encoder.get_feature_names_out()))
 # print(housing_num['median_income'].min())
 # print(housing_num['median_income'].max())
 
-# Es una buena práctica la normalización/estandarización de la escala para poder procesar mejor
-from sklearn.preprocessing import MinMaxScaler
-min_max_scaler = MinMaxScaler(feature_range=(-1, 1))
-housing_num_min_max_scaled = min_max_scaler.fit_transform(housing_num)
-print(housing_num_min_max_scaled[:8])
-print()
+# #Es una buena práctica la normalización/estandarización de la escala para poder procesar mejor
+# from sklearn.preprocessing import MinMaxScaler
+# min_max_scaler = MinMaxScaler(feature_range=(-1, 1))
+# housing_num_min_max_scaled = min_max_scaler.fit_transform(housing_num)
+# print(housing_num_min_max_scaled[:8])
+# print()
 
-# Utilizando el transformador StandardScaler de sklearn
+# # Utilizando el transformador StandardScaler de sklearn aplicar la estandarización
 from sklearn.preprocessing import StandardScaler
-std_scaler = StandardScaler()
-housing_num_std_scaled = std_scaler.fit_transform(housing_num)
-print(housing_num_std_scaled[:8])
+# std_scaler = StandardScaler()
+# housing_num_std_scaled = std_scaler.fit_transform(housing_num)
+# print(housing_num_std_scaled[:8])
+
+
+# Para mejor manejo de las características multimodales, a parte de la bucketización
+# se puede recurrir al uso de RBF radial basis function, que es tener una función que dependen de la distancia
+# entre la entrada del valor y un punto fijo de la característica
+from sklearn.metrics.pairwise import rbf_kernel
+
+#aquí se genera los valores de una función RBF usando una librer+ia de sklearn
+#se hace sobre la característica de housing_median_age, para un punto fijo de 35 años
+# mientras mayor es gamma, el valor decae más rápido a medida que se aleja del punto fijo
+age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
+
+# # extra code – this code generates Figure 2–18
+# #*********************************************
+# ages = np.linspace(housing["housing_median_age"].min(),
+#                    housing["housing_median_age"].max(),
+#                    500).reshape(-1, 1)
+# gamma1 = 0.1
+# gamma2 = 0.03
+# rbf1 = rbf_kernel(ages, [[35]], gamma=gamma1)
+# rbf2 = rbf_kernel(ages, [[35]], gamma=gamma2)
+
+# fig, ax1 = plt.subplots()
+
+# ax1.set_xlabel("Housing median age")
+# ax1.set_ylabel("Number of districts")
+# ax1.hist(housing["housing_median_age"], bins=50)
+
+# ax2 = ax1.twinx()  # create a twin axis that shares the same x-axis
+# color = "blue"
+# ax2.plot(ages, rbf1, color=color, label="gamma = 0.10")
+# ax2.plot(ages, rbf2, color=color, label="gamma = 0.03", linestyle="--")
+# ax2.tick_params(axis='y', labelcolor=color)
+# ax2.set_ylabel("Age similarity", color=color)
+
+# plt.legend(loc="upper left")
+# save_fig("age_similarity_plot")
+# plt.show()
+# #*************************************************************************
+
+
+# #Escalar los valores objetivos puede ser una opción en aquellos casos en que presentan una distribución 
+# # por ejemplo de cola pesada
+# # Se cuenta con la función inverse_transform del escalador, que permite, luego de obtener la predicción
+# # en la escala ajustada, volver a los valores reales y poder evaluar el nivel de precisión de la predicción
+# # respecto de los valores esperados
+# from sklearn.linear_model import LinearRegression
+# target_scaler = StandardScaler()
+# scaled_labels = target_scaler.fit_transform(housing_labels.to_frame())
+# model = LinearRegression()
+# model.fit(housing[["median_income"]], scaled_labels)
+# some_new_data = housing[["median_income"]].iloc[:5] # pretend this is new data
+# print(housing[["median_income"]].iloc[:5])
+# scaled_predictions = model.predict(some_new_data)
+# predictions = target_scaler.inverse_transform(scaled_predictions)
