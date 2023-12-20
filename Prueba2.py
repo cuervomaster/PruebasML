@@ -68,6 +68,7 @@ def is_id_in_test_set(identifier, test_ratio):
 
 def split_data_with_id_hash(data, test_ratio, id_column):
     ids = data[id_column]
+    #print(ids)
     #genera un dataframe donde reemplaza cada elemento de data[id_column] por True o False, según el resultado de aplicar
     # la función is_id_in_test_set
     in_test_set = ids.apply(lambda id_: is_id_in_test_set(id_, test_ratio))
